@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HashForge // Interactive Cryptographic Suite</title>
+  <!-- Google Fonts: Space Grotesk, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="glow-sphere sphere-1"></div>
+  <div class="glow-sphere sphere-2"></div>
+  
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="cyber-icon">⚡</div>
+        <div class="logo-text">
+          <h1>HASH<span class="highlight">FORGE</span></h1>
+          <span class="subtitle">Cryptographic Security Suite & Visual Lab</span>
+        </div>
+      </div>
+      <nav class="nav-tabs">
+        <button class="tab-btn active" data-tab="tab-cracker">
+          <span class="btn-glow"></span>
+          <span class="btn-text">Dictionary Cracker</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-generator">
+          <span class="btn-glow"></span>
+          <span class="btn-text">Generator & Avalanche</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-strength">
+          <span class="btn-glow"></span>
+          <span class="btn-text">Entropy & Brute Sim</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-education">
+          <span class="btn-glow"></span>
+          <span class="btn-text">Educational Sandbox</span>
+        </button>
+      </nav>
+    </header>
+
+    <main class="app-content">
+      <!-- TAB 1: DICTIONARY CRACKER -->
+      <section id="tab-cracker" class="tab-content active">
+        <div class="grid-layout">
+          <!-- Input Controls -->
+          <div class="glass-card panel-input">
+            <div class="panel-header">
+              <span class="cyber-badge green">CRACKER ENGINE</span>
+              <h2>Attack Configuration</h2>
+            </div>
+            
+            <div class="form-group">
+              <label for="target-hash">Target Hash String</label>
+              <div class="input-wrapper">
+                <input type="text" id="target-hash" placeholder="Enter MD5, SHA-1, SHA-256 or SHA-512 hash..." autocomplete="off">
+                <div class="autodetect-badge" id="hash-type-badge">Auto-detecting...</div>
+              </div>
+            </div>
+
+            <div class="form-group-row">
+              <div class="form-subgroup">
+                <label for="hash-type-select">Override Hash Type</label>
+                <select id="hash-type-select">
+                  <option value="auto">Auto-detect</option>
+                  <option value="md5">MD5</option>
+                  <option value="sha1">SHA-1</option>
+                  <option value="sha256">SHA-256</option>
+                  <option value="sha512">SHA-512</option>
+                </select>
+              </div>
+              <div class="form-subgroup">
+                <label for="wordlist-select">Wordlist Source</label>
+                <select id="wordlist-select">
+                  <option value="default-10k">Common 10k Passwords</option>
+                  <option value="default-1k">Quick 1k Passwords</option>
+                  <option value="custom">Upload Custom Wordlist</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group hidden" id="custom-wordlist-wrapper">
+              <label for="wordlist-file">Upload custom wordlist (.txt)</label>
+              <input type="file" id="wordlist-file" accept=".txt">
+            </div>
+
+            <div class="action-buttons">
+              <button id="btn-start-crack" class="cyber-btn primary">
+                <span class="btn-shine"></span>
+                <span>LAUNCH DICTIONARY ATTACK</span>
+              </button>
+              <button id="btn-stop-crack" class="cyber-btn danger hidden" disabled>
+                <span>TERMINATE ATTACK</span>
+              </button>
+            </div>
+
+            <div class="crack-presets">
+              <span class="preset-label">Test presets:</span>
+              <button class="preset-btn" data-hash="5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8" data-type="sha256">SHA-256 ("password")</button>
+              <button class="preset-btn" data-hash="b1b3773a05c0ed0176787a4f1574ff0075f7521e" data-type="sha1">SHA-1 ("admin")</button>
+              <button class="preset-btn" data-hash="098f6bcd4621d373cade4e832627b4f6" data-type="md5">MD5 ("test")</button>
+            </div>
+          </div>
+
+          <!-- Real-time HUD Dashboard -->
+          <div class="glass-card panel-hud">
+            <div class="panel-header">
+              <span class="cyber-badge cyan">HUD TELEMETRY</span>
+              <h2>Attack Progress Monitor</h2>
+            </div>
+
+            <div class="hud-monitor">
+              <div class="hud-gauge-group">
+                <div class="hud-stat-box">
+                  <span class="stat-lbl">ENGINE STATUS</span>
+                  <span class="stat-val text-neon-blue" id="hud-status">IDLE</span>
+                </div>
+                <div class="hud-stat-box">
+                  <span class="stat-lbl">HASH TYPE</span>
+                  <span class="stat-val text-neon-yellow" id="hud-hash-type">-</span>
+                </div>
+                <div class="hud-stat-box">
+                  <span class="stat-lbl">SPEED (H/S)</span>
+                  <span class="stat-val text-neon-green" id="hud-speed">0</span>
+                </div>
+              </div>
+
+              <!-- Visual progress progress bar -->
+              <div class="progress-container">
+                <div class="progress-bar-wrapper">
+                  <div class="progress-bar-fill" id="hud-progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-labels">
+                  <span id="hud-progress-percent">0.00%</span>
+                  <span id="hud-progress-ratio">0 / 0</span>
+                </div>
+              </div>
+
+              <div class="hud-feed-terminal">
+                <div class="terminal-bar">
+                  <span class="terminal-dot"></span>
+                  <span class="terminal-dot"></span>
+                  <span class="terminal-dot"></span>
+                  <span class="terminal-title">LIVE ATTEMPT STREAM</span>
+                </div>
+                <div class="terminal-content" id="hud-terminal-logs">
+                  <div class="log-line text-muted">Ready to launch hash-cracker engine...</div>
+                </div>
+              </div>
+
+              <!-- Cracked banner -->
+              <div class="cracked-alert hidden" id="cracked-success-card">
+                <div class="cracked-alert-content">
+                  <div class="alert-icon">✔</div>
+                  <div class="alert-details">
+                    <h3>HASH SUCCESSFULLY CRACKED!</h3>
+                    <div class="stat-flex">
+                      <div class="stat-col">
+                        <span class="col-lbl">PLAIN TEXT</span>
+                        <strong class="col-val text-neon-green" id="crack-result-plain">password</strong>
+                      </div>
+                      <div class="stat-col">
+                        <span class="col-lbl">ELAPSED TIME</span>
+                        <strong class="col-val" id="crack-result-time">0.12s</strong>
+                      </div>
+                      <div class="stat-col">
+                        <span class="col-lbl">ATTEMPTS</span>
+                        <strong class="col-val" id="crack-result-attempts">432</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: HASH GENERATOR & AVALANCHE EFFECT -->
+      <section id="tab-generator" class="tab-content">
+        <div class="grid-layout">
+          <!-- Live Hasher -->
+          <div class="glass-card">
+            <div class="panel-header">
+              <span class="cyber-badge purple">LIVE HASHER</span>
+              <h2>Real-Time Hash Generator</h2>
+            </div>
+            
+            <div class="form-group">
+              <label for="generator-input">Input String</label>
+              <textarea id="generator-input" placeholder="Type text here to hash in real-time..." rows="3"></textarea>
+            </div>
+
+            <div class="hash-results-stack">
+              <div class="hash-result-row">
+                <span class="hash-label">MD5</span>
+                <div class="hash-output-box">
+                  <code class="hash-val" id="gen-md5">-</code>
+                  <button class="btn-copy" data-target="gen-md5">COPY</button>
+                </div>
+              </div>
+              <div class="hash-result-row">
+                <span class="hash-label">SHA-1</span>
+                <div class="hash-output-box">
+                  <code class="hash-val" id="gen-sha1">-</code>
+                  <button class="btn-copy" data-target="gen-sha1">COPY</button>
+                </div>
+              </div>
+              <div class="hash-result-row">
+                <span class="hash-label">SHA-256</span>
+                <div class="hash-output-box">
+                  <code class="hash-val" id="gen-sha256">-</code>
+                  <button class="btn-copy" data-target="gen-sha256">COPY</button>
+                </div>
+              </div>
+              <div class="hash-result-row">
+                <span class="hash-label">SHA-512</span>
+                <div class="hash-output-box">
+                  <code class="hash-val" id="gen-sha512">-</code>
+                  <button class="btn-copy" data-target="gen-sha512">COPY</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Avalanche Visualizer -->
+          <div class="glass-card">
+            <div class="panel-header">
+              <span class="cyber-badge pink">AVALANCHE EFFECT</span>
+              <h2>Visual Bit Flip Analysis</h2>
+            </div>
+            <p class="panel-desc">
+              The <strong>avalanche effect</strong> is a key property of cryptographic hashes: changing a single bit in the input causes a drastic, unpredictable change in the output hash.
+            </p>
+
+            <div class="avalanche-comparator">
+              <div class="comparison-inputs">
+                <div class="form-group flex-1">
+                  <label for="avalanche-input-a">Input A</label>
+                  <input type="text" id="avalanche-input-a" value="hello" placeholder="Input A">
+                </div>
+                <div class="form-group flex-1">
+                  <label for="avalanche-input-b">Input B <span class="input-diff-tip">(1 character difference)</span></label>
+                  <input type="text" id="avalanche-input-b" value="hellp" placeholder="Input B">
+                </div>
+              </div>
+
+              <div class="bit-comparison-hud">
+                <div class="comparison-header">
+                  <h3>Bitstream Difference Analysis (SHA-256)</h3>
+                  <div class="diff-percentage" id="avalanche-diff-pct">Diff: 0%</div>
+                </div>
+
+                <div class="bit-vis-grid" id="avalanche-grid">
+                  <!-- Generated dynamically via JS -->
+                </div>
+                <div class="bit-vis-legend">
+                  <span class="legend-item"><span class="legend-dot color-match"></span> Matching bits (0)</span>
+                  <span class="legend-item"><span class="legend-dot color-diff"></span> Flipped/different bits (1)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: STRENGTH CALCULATOR & BRUTE SIMULATOR -->
+      <section id="tab-strength" class="tab-content">
+        <div class="grid-layout">
+          <!-- Entropy Calculator -->
+          <div class="glass-card">
+            <div class="panel-header">
+              <span class="cyber-badge orange">ENTROPY MATH</span>
+              <h2>Password Complexity Calculator</h2>
+            </div>
+
+            <div class="strength-calculator-container">
+              <div class="form-group">
+                <label>Password Characters Length: <span class="slider-val highlight" id="slider-length-val">8</span></label>
+                <input type="range" id="strength-length-slider" min="1" max="24" value="8" class="cyber-slider">
+              </div>
+
+              <label class="section-sublbl">Include Character Sets:</label>
+              <div class="charset-checkbox-grid">
+                <label class="cyber-checkbox-label">
+                  <input type="checkbox" id="charset-lower" checked>
+                  <span class="custom-checkbox"></span>
+                  <span>Lowercase (a-z) <span class="text-muted">[26]</span></span>
+                </label>
+                <label class="cyber-checkbox-label">
+                  <input type="checkbox" id="charset-upper" checked>
+                  <span class="custom-checkbox"></span>
+                  <span>Uppercase (A-Z) <span class="text-muted">[26]</span></span>
+                </label>
+                <label class="cyber-checkbox-label">
+                  <input type="checkbox" id="charset-digits" checked>
+                  <span class="custom-checkbox"></span>
+                  <span>Digits (0-9) <span class="text-muted">[10]</span></span>
+                </label>
+                <label class="cyber-checkbox-label">
+                  <input type="checkbox" id="charset-symbols">
+                  <span class="custom-checkbox"></span>
+                  <span>Special Symbols <span class="text-muted">[32]</span></span>
+                </label>
+              </div>
+
+              <hr class="cyber-divider">
+
+              <div class="entropy-metrics">
+                <div class="metric-row">
+                  <span>Pool Size (S):</span>
+                  <strong id="entropy-pool-size">62</strong>
+                </div>
+                <div class="metric-row">
+                  <span>Total Combinations (S<sup>L</sup>):</span>
+                  <strong id="entropy-combinations" class="text-neon-cyan">2.18 × 10¹⁴</strong>
+                </div>
+                <div class="metric-row">
+                  <span>Entropy Score:</span>
+                  <strong id="entropy-bits-val" class="text-neon-green">47.6 bits</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Brute Simulator -->
+          <div class="glass-card">
+            <div class="panel-header">
+              <span class="cyber-badge red">TIME TO CRACK</span>
+              <h2>Simulated Brute-Force Feasibility</h2>
+            </div>
+            
+            <div class="crack-time-estimator">
+              <table class="estimator-table">
+                <thead>
+                  <tr>
+                    <th>Attacking Hardware</th>
+                    <th>Hash Rate</th>
+                    <th>Time to Crack (Worst-Case)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr id="hardware-row-cpu">
+                    <td>Consumer CPU (Single Thread)</td>
+                    <td>10 MH/s (10⁷ h/s)</td>
+                    <td class="est-time">-</td>
+                  </tr>
+                  <tr id="hardware-row-gpu">
+                    <td>NVIDIA RTX 4090 GPU</td>
+                    <td>15 GH/s (1.5 × 10¹⁰ h/s)</td>
+                    <td class="est-time">-</td>
+                  </tr>
+                  <tr id="hardware-row-rig">
+                    <td>8x GPU Hashing Rig</td>
+                    <td>120 GH/s (1.2 × 10¹¹ h/s)</td>
+                    <td class="est-time">-</td>
+                  </tr>
+                  <tr id="hardware-row-botnet">
+                    <td>Distributed Botnet Cluster</td>
+                    <td>10 TH/s (10¹³ h/s)</td>
+                    <td class="est-time">-</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <hr class="cyber-divider">
+
+              <div class="brute-visualizer-box">
+                <div class="visualizer-header">
+                  <h4>BRUTE-FORCE SEARCH SPACE SIMULATION</h4>
+                  <button id="btn-toggle-brute-sim" class="cyber-btn-mini">START SIMULATION</button>
+                </div>
+                <div class="sim-screen">
+                  <div class="sim-overlay">SIMULATING ENGINE ACTIVE</div>
+                  <div class="sim-text-grid" id="sim-text-grid">
+                    <!-- Dynamic live text changes -->
+                    <span>CRACKER_INIT...</span>
+                    <span>READY...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: EDUCATIONAL LAB & SANDBOX -->
+      <section id="tab-education" class="tab-content">
+        <div class="edu-grid-layout">
+          <!-- Explanations Left -->
+          <div class="glass-card">
+            <div class="panel-header">
+              <span class="cyber-badge cyan">EDUCATIONAL ACADEMY</span>
+              <h2>How Cryptographic Hashing Works</h2>
+            </div>
+            
+            <div class="accordion-group">
+              <details class="edu-details" open>
+                <summary>What is a Hash Function?</summary>
+                <div class="details-content">
+                  <p>
+                    A <strong>cryptographic hash function</strong> takes an input (e.g., text, files, passwords) of arbitrary length and returns a fixed-length string of bytes. It is a <strong>one-way function</strong>: it is computationally impossible to reverse-engineer the original input from the output hash.
+                  </p>
+                  <p>Common algorithms include:</p>
+                  <ul>
+                    <li><strong>MD5:</strong> 128-bit hash. Extremely fast but considered cryptographically broken due to collision vulnerabilities.</li>
+                    <li><strong>SHA-1:</strong> 160-bit hash. Also deprecated for critical systems, but still seen in legacy platforms.</li>
+                    <li><strong>SHA-256:</strong> 256-bit hash. Member of the SHA-2 family. Highly secure and widely used in modern authentication, SSL certificates, and Bitcoin.</li>
+                  </ul>
+                </div>
+              </details>
+
+              <details class="edu-details">
+                <summary>Dictionary Attacks vs. Brute-Force Attacks</summary>
+                <div class="details-content">
+                  <p>
+                    Because hashes are irreversible, attackers use guessing techniques:
+                  </p>
+                  <ul>
+                    <li><strong>Dictionary Attacks:</strong> The cracker hashes list items from pre-compiled collections of commonly used passwords (like <em>RockYou.txt</em> or <em>10k-most-common</em>) and checks if the generated hash matches the target. Fast and highly successful because humans choose predictable passwords.</li>
+                    <li><strong>Brute-Force Attacks:</strong> The cracker systematically computes hashes for every possible character combination (e.g., <code>aaaaa</code>, <code>aaaab</code>, <code>aaaac</code>) until a match is found. Computationally expensive and impractical for long, complex passwords.</li>
+                  </ul>
+                </div>
+              </details>
+
+              <details class="edu-details">
+                <summary>Salting: Defeating Pre-computed Rainbow Tables</summary>
+                <div class="details-content">
+                  <p>
+                    If users share passwords, or use common ones, attackers can compute the hashes of millions of common passwords in advance. These databases of pre-computed hashes are called <strong>Rainbow Tables</strong>.
+                  </p>
+                  <p>
+                    To defeat this, databases store passwords with a <strong>Salt</strong>. A salt is a random string added to the password before hashing:
+                    <br><code class="block-code">hash = SHA-256(password + salt)</code>
+                  </p>
+                  <p>
+                    Even if two users share the same password "123456", they get unique salts, creating completely different hashes. Rainbow tables are rendered completely useless!
+                  </p>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <!-- Dynamic Sandbox Demo -->
+          <div class="glass-card">
+            <div class="panel-header">
+              <span class="cyber-badge green">INTERACTIVE DEMO</span>
+              <h2>Rainbow Tables & Salting Lab</h2>
+            </div>
+            <p class="panel-desc">See exactly how salting renders pre-computed hashes useless.</p>
+
+            <div class="salt-sandbox">
+              <div class="form-group">
+                <label for="salt-pass">Password</label>
+                <input type="text" id="salt-pass" value="supersecret" placeholder="Enter password...">
+              </div>
+
+              <div class="form-group">
+                <label for="salt-val">Salt (Random Appendage)</label>
+                <div class="input-row-group">
+                  <input type="text" id="salt-val" value="z9x7v5" placeholder="Enter custom salt or generate random...">
+                  <button id="btn-gen-salt" class="cyber-btn-mini">GENERATE RANDOM SALT</button>
+                </div>
+              </div>
+
+              <hr class="cyber-divider">
+
+              <div class="sandbox-comparison">
+                <div class="comparison-card normal-hash">
+                  <h4>STANDARD HASH (No Salt)</h4>
+                  <div class="hash-box-label">SHA-256("supersecret")</div>
+                  <code class="sandbox-hash-code" id="sandbox-hash-nosalt">-</code>
+                  <div class="table-match-badge match-danger" id="rainbow-match-nosalt">⚠️ Found in Rainbow Table!</div>
+                </div>
+
+                <div class="comparison-card salted-hash">
+                  <h4>SALTED HASH</h4>
+                  <div class="hash-box-label">SHA-256("supersecret" + "z9x7v5")</div>
+                  <code class="sandbox-hash-code" id="sandbox-hash-salted">-</code>
+                  <div class="table-match-badge match-success" id="rainbow-match-salted">🛡️ Safe (No Rainbow Table matches!)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <div>HASHFORGE SECURE SUITE // EDUCATION PLATFORM ONLY</div>
+      <div class="text-muted">No data is sent to external servers. All cryptographic actions occur in local memory.</div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
