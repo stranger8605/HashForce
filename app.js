@@ -391,7 +391,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const miniWordlist = [
     "password", "123456", "123456789", "admin", "12345", "guest", "root", "12345678", "qwerty", "password123",
     "supersecret", "secret", "welcome", "login", "test", "master", "security", "pass", "oracle", "mysql",
-    "hello", "world", "apple", "orange", "monkey", "dragon", "banana", "coffee", "computer", "football", "cybersecurity"
+    "hello", "world", "apple", "orange", "monkey", "dragon", "banana", "coffee", "computer", "football", "cybersecurity",
+    "It60@it60", "antony12", "arunesh22", "vicky8605"
   ];
   
   // High-frequency wordlist setup (10k common passwords generated asynchronously on load)
@@ -404,9 +405,10 @@ document.addEventListener("DOMContentLoaded", function () {
       "hello", "world", "letmein", "qwerty", "dragon", "monkey", "football", "soccer", "baseball", "computer", "internet",
       "google", "youtube", "netflix", "testing", "charlie", "orange", "apple", "banana", "sweet", "superman", "batman",
       "spiderman", "yellow", "purple", "green", "blue", "black", "white", "summer", "winter", "spring", "autumn", "coffee",
-      "school", "family", "hacked", "hunter2", "security", "pass123", "cybersecurity"
+      "school", "family", "hacked", "hunter2", "security", "pass123", "cybersecurity",
+      "antony", "arunesh", "vicky", "it60"
     ];
-    const patterns = ["", "1", "12", "123", "1234", "12345", "123456", "!", "@", "123!", "2026", "2025"];
+    const patterns = ["", "1", "12", "123", "1234", "12345", "123456", "!", "@", "123!", "2026", "2025", "22", "8605", "@it60"];
     
     let list = new Set(miniWordlist);
     
