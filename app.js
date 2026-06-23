@@ -390,7 +390,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Default embedded wordlist fallback to guarantee functionality without external downloads
   const miniWordlist = [
     "password", "123456", "123456789", "admin", "12345", "guest", "root", "12345678", "qwerty", "password123",
-    "supersecret", "secret", "welcome", "login", "test", "master", "security", "pass", "oracle", "mysql"
+    "supersecret", "secret", "welcome", "login", "test", "master", "security", "pass", "oracle", "mysql",
+    "hello", "world", "apple", "orange", "monkey", "dragon", "banana", "coffee", "computer", "football", "cybersecurity"
   ];
   
   // High-frequency wordlist setup (10k common passwords generated asynchronously on load)
@@ -398,7 +399,13 @@ document.addEventListener("DOMContentLoaded", function () {
   
   // Download or construct rockyou-subset or standard common password structures
   function generateCommonPasslist() {
-    const basenames = ["password", "admin", "secret", "welcome", "shadow", "cyber", "system", "oracle", "test", "root", "guest", "matrix", "hacker"];
+    const basenames = [
+      "password", "admin", "secret", "welcome", "shadow", "cyber", "system", "oracle", "test", "root", "guest", "matrix", "hacker",
+      "hello", "world", "letmein", "qwerty", "dragon", "monkey", "football", "soccer", "baseball", "computer", "internet",
+      "google", "youtube", "netflix", "testing", "charlie", "orange", "apple", "banana", "sweet", "superman", "batman",
+      "spiderman", "yellow", "purple", "green", "blue", "black", "white", "summer", "winter", "spring", "autumn", "coffee",
+      "school", "family", "hacked", "hunter2", "security", "pass123", "cybersecurity"
+    ];
     const patterns = ["", "1", "12", "123", "1234", "12345", "123456", "!", "@", "123!", "2026", "2025"];
     
     let list = new Set(miniWordlist);
@@ -432,6 +439,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const hashTypeSelect = document.getElementById("hash-type-select");
   const wordlistSelect = document.getElementById("wordlist-select");
   const customWordlistWrapper = document.getElementById("custom-wordlist-wrapper");
+  const customWordlistPasteWrapper = document.getElementById("custom-wordlist-paste-wrapper");
+  const wordlistPasteInput = document.getElementById("wordlist-paste");
   const wordlistFile = document.getElementById("wordlist-file");
   const btnStartCrack = document.getElementById("btn-start-crack");
   const btnStopCrack = document.getElementById("btn-stop-crack");
@@ -476,10 +485,13 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   wordlistSelect.addEventListener("change", function () {
+    customWordlistWrapper.classList.add("hidden");
+    customWordlistPasteWrapper.classList.add("hidden");
+
     if (this.value === "custom") {
       customWordlistWrapper.classList.remove("hidden");
-    } else {
-      customWordlistWrapper.classList.add("hidden");
+    } else if (this.value === "paste") {
+      customWordlistPasteWrapper.classList.remove("hidden");
     }
   });
 
@@ -615,6 +627,15 @@ document.addEventListener("DOMContentLoaded", function () {
       activeWordlist = miniWordlist;
     } else if (wordlistSelect.value === "default-10k") {
       activeWordlist = default10kWordlist;
+    } else if (wordlistSelect.value === "paste") {
+      const pasteText = wordlistPasteInput.value.trim();
+      if (!pasteText) {
+        alert("Please paste some custom words into the textbox first.");
+        return;
+      }
+      activeWordlist = pasteText.split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
     } else {
       if (customUploadedWordlist.length === 0) {
         alert("Please upload a custom wordlist file first.");
